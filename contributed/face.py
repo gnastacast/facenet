@@ -63,7 +63,7 @@ class Recognition:
     def __init__(self):
         self.detect = Detection()
         self.encoder = Encoder()
-        self.identifier = Identifier()
+        # self.identifier = Identifier()
 
     def add_identity(self, image, person_name):
         faces = self.detect.find_faces(image)
@@ -81,7 +81,7 @@ class Recognition:
             if debug:
                 cv2.imshow("Face: " + str(i), face.image)
             face.embedding = self.encoder.generate_embedding(face)
-            face.name = self.identifier.identify(face)
+            # face.name = self.identifier.identify(face)
 
         return faces
 
