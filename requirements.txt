@@ -1,9 +1,9 @@
-tensorflow==1.7
+tensorflow-gpu #==1.7
 scipy
 scikit-learn
 opencv-python
 h5py
 matplotlib
-Pillow
+imageio
 requests
 psutil
