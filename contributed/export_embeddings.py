@@ -57,6 +57,7 @@ import numpy as np
 import sys
 import os
 import argparse
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 import facenet
 import align.detect_face
 import glob
