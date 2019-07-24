@@ -29,8 +29,8 @@ from scipy import misc
 import imageio
 import cv2
 import sys
-sys.path.append('/media/gnastacast/Data/Work/EunsuProject/facenet/src')
 import os
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 import argparse
 import tensorflow as tf
 import numpy as np
