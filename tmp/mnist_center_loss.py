@@ -28,7 +28,9 @@ import sys
 import time
 
 from six.moves import urllib  # @UnresolvedImport
-import tensorflow as tf
+
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 import numpy as np
 import matplotlib.pyplot as plt
 from tensorflow.python.ops import control_flow_ops

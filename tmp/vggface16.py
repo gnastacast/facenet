@@ -4,7 +4,9 @@ and point to the file 'vgg_face.mat'
 """
 import numpy as np
 from scipy import io
-import tensorflow as tf
+
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 def load(filename, images):
     #filename = '../data/vgg_face_matconvnet/data/vgg_face.mat'

@@ -3,7 +3,9 @@ import numpy as np
 from functools import partial
 import PIL.Image
 
-import tensorflow as tf
+
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 import matplotlib.pyplot as plt
 import urllib2
 import os

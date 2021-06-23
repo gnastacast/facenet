@@ -4,7 +4,9 @@ and point to the file 'imagenet-vgg-verydeep-19.mat'
 """
 import numpy as np
 from scipy import io
-import tensorflow as tf
+
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 def load(filename, images):
     vgg19 = io.loadmat(filename)
