@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # MIT License
 # 
 # Copyright (c) 2017 David Sandberg
@@ -19,28 +20,40 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
 """Train a Variational Autoencoder
 """
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import os
+cwd = os.getcwd()
+print(cwd)
 
-import tensorflow.compat.v1 as tf
-tf.disable_v2_behavior()
-import tensorflow.contrib.slim as slim
+import sys
+print(sys.version)
+sys.path.append(cwd)
+
+import tensorflow as tf
+if tf.__version__[0] == '1':
+    import tensorflow.contrib.slim as slim
+else:
+    import tensorflow.compat.v1 as tf
+    tf.disable_v2_behavior()
+    import tensorflow.contrib.slim as slim
+
 import sys
 import time
 import importlib
 import argparse
-import facenet
+from src import facenet
 import numpy as np
 import h5py
 import os
 from datetime import datetime
 from scipy import misc
 from six import iteritems
+import cv2
 
 def main(args):
   
@@ -70,7 +83,6 @@ def main(args):
         
         train_set = facenet.get_dataset(args.data_dir)
         image_list, _ = facenet.get_image_paths_and_labels(train_set)
-        
         # Create the input queue
         input_queue = tf.train.string_input_producer(image_list, shuffle=True)
     
@@ -114,6 +126,7 @@ def main(args):
             images_resize = tf.image.resize_images(images, (gen_image_size,gen_image_size))
             reconstruction_loss = tf.reduce_mean(tf.reduce_sum(tf.pow(images_resize - reconstructed,2)))
         elif args.reconstruction_loss_type=='PERCEPTUAL':
+            sys.path.append(cwd)
             network = importlib.import_module(args.model_def)
 
             reconstructed_norm_resize = tf.image.resize_images(reconstructed_norm, (args.input_image_size,args.input_image_size))
@@ -163,9 +176,9 @@ def main(args):
         facenet_saver = tf.train.Saver(get_facenet_variables_to_restore())
 
         # Start running operations on the Graph
-        gpu_memory_fraction = 1.0
-        gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=gpu_memory_fraction)
-        sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options, log_device_placement=False))
+        # gpu_memory_fraction = 1.0
+        # gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=gpu_memory_fraction)
+        sess = tf.Session(config=tf.ConfigProto(log_device_placement=False))
         sess.run(tf.global_variables_initializer())
         sess.run(tf.local_variables_initializer())
         coord = tf.train.Coordinator()
@@ -187,6 +200,10 @@ def main(args):
                 'learning_rate': np.zeros((0,), np.float),
                 }
             
+            if args.checkpoint != None:
+                checkpoint_exp = os.path.expanduser(args.checkpoint)
+                saver.restore(sess, checkpoint_exp)
+
             step = 0
             print('Running training')
             while step < args.max_nrof_steps:
@@ -197,7 +214,7 @@ def main(args):
                     _, reconstruction_loss_, kl_loss_mean_, total_loss_, learning_rate_, rec_ = sess.run(
                           [train_op, reconstruction_loss, kl_loss_mean, total_loss, learning_rate, reconstructed])
                     img = facenet.put_images_on_grid(rec_, shape=(16,8))
-                    misc.imsave(os.path.join(model_dir, 'reconstructed_%06d.png' % step), img)
+                    cv2.imwrite(os.path.join(model_dir, 'reconstructed_%06d.png' % step), img)
                 else:
                     _, reconstruction_loss_, kl_loss_mean_, total_loss_, learning_rate_ = sess.run(
                           [train_op, reconstruction_loss, kl_loss_mean, total_loss, learning_rate])
@@ -250,6 +267,8 @@ def parse_arguments(argv):
         help='Pretrained model to use to calculate features for perceptual loss.')
     parser.add_argument('--models_base_dir', type=str,
         help='Directory where to write trained models and checkpoints.', default='~/vae')
+    parser.add_argument('--checkpoint', type=str,
+        help='checkpoint file to load from.', default=None)
     parser.add_argument('--loss_features', type=str,
         help='Comma separated list of features to use for perceptual loss. Features should be defined ' +
           'in the end_points dictionary.', default='Conv2d_1a_3x3,Conv2d_2a_3x3, Conv2d_2b_3x3')

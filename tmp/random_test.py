@@ -1,6 +1,4 @@
-
-import tensorflow.compat.v1 as tf
-tf.disable_v2_behavior()
+import tensorflow as tf
 import numpy as np
 from six.moves import xrange
 
@@ -71,9 +69,7 @@ with tf.Graph().as_default():
   #print item
 
 
-#
-import tensorflow.compat.v1 as tf
-tf.disable_v2_behavior()
+#import tensorflow as tf
 #import numpy as np
 #import matplotlib.pyplot as plt
 #import math

@@ -29,14 +29,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-
-import tensorflow.compat.v1 as tf
-tf.disable_v2_behavior()
+import tensorflow as tf
 import tensorflow.contrib.slim as slim
-import generative.models.vae_base  # @UnresolvedImport
+from .vae_base import Vae # @UnresolvedImport
 
 
-class Vae(generative.models.vae_base.Vae):
+class Vae(Vae):
   
     def __init__(self, latent_variable_dim):
         super(Vae, self).__init__(latent_variable_dim, 64)

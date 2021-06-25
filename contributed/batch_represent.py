@@ -70,15 +70,13 @@ import sys
 import argparse
 import importlib
 import time
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
+
+sys.path.insert(1, "../src")
 import facenet
 import numpy as np
 from sklearn.datasets import load_files
-
-import tensorflow.compat.v1 as tf
-tf.disable_v2_behavior()
+import tensorflow as tf
 from six.moves import xrange
-import cv2
 
 def main(args):
 
@@ -94,7 +92,7 @@ def main(args):
 			# load the model
 			print("Loading trained model...\n")
 			meta_file, ckpt_file = facenet.get_model_filenames(os.path.expanduser(args.trained_model_dir))
-			facenet.load_model(args.trained_model_dir)
+			facenet.load_model(args.trained_model_dir, meta_file, ckpt_file)
 
 			# grab all image paths and labels
 			print("Finding image paths and targets...\n")

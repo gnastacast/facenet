@@ -28,9 +28,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-
-import tensorflow.compat.v1 as tf
-tf.disable_v2_behavior()
+import tensorflow as tf
 import sys
 import argparse
 import importlib
@@ -101,14 +99,14 @@ def main(args):
                 attribute_vectors = np.array(f.get('attribute_vectors'))
 
             # Reconstruct faces while adding varying amount of the selected attribute vector
-            attribute_index = 31 # 31: 'Smiling'
+            attribute_index = args.attribute_index
             image_indices = [8,11,13,18,19,26,31,39,47,54,56,57,58,59,60,73]
             nrof_images = len(image_indices)
             nrof_interp_steps = 10
             sweep_latent_var = np.zeros((nrof_interp_steps*nrof_images, args.latent_var_size), np.float32)
             for j in range(nrof_images):
                 image_index = image_indices[j]
-                idx = np.argwhere(attributes[:,attribute_index]==-1)[image_index,0]
+                idx = np.argwhere(attributes[:,attribute_index]<=0)[image_index,0]
                 for i in range(nrof_interp_steps):
                     sweep_latent_var[i+nrof_interp_steps*j,:] = latent_vars[idx,:] + 5.0*i/nrof_interp_steps*attribute_vectors[attribute_index,:]
                 
@@ -136,6 +134,8 @@ def parse_arguments(argv):
         help='Dimensionality of the latent variable.', default=100)
     parser.add_argument('--seed', type=int,
         help='Random seed.', default=666)
+    parser.add_argument('--attribute_index', type=int, default=31,  # 31: 'Smiling'
+        help='Index of the attribute we want to interpolate')
 
     return parser.parse_args(argv)
   

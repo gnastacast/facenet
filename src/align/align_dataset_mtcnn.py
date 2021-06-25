@@ -25,21 +25,21 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from scipy import misc
-import imageio
-import cv2
-import sys
 import os
-sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
-import argparse
+cwd = os.getcwd()
+import sys
+sys.path.append(cwd)
+sys.path.append(os.path.join(os.path.abspath(__file__), '..', '..'))
+from src import facenet
 
-import tensorflow.compat.v1 as tf
-tf.disable_v2_behavior()
+from scipy import misc
+import argparse
+import tensorflow as tf
 import numpy as np
-import facenet
 import align.detect_face
 import random
 from time import sleep
+import cv2
 
 def main(args):
     sleep(random.random())
@@ -50,6 +50,7 @@ def main(args):
     src_path,_ = os.path.split(os.path.realpath(__file__))
     facenet.store_revision_info(src_path, output_dir, ' '.join(sys.argv))
     dataset = facenet.get_dataset(args.input_dir)
+    print("\n\nDATASET:", dataset, args.input_dir)
     
     print('Creating networks and loading parameters')
     
@@ -85,7 +86,7 @@ def main(args):
                 print(image_path)
                 if not os.path.exists(output_filename):
                     try:
-                        img = imageio.imread(image_path)
+                        img = cv2.imread(image_path)
                     except (IOError, ValueError, IndexError) as e:
                         errorMessage = '{}: {}'.format(image_path, e)
                         print(errorMessage)
@@ -133,7 +134,7 @@ def main(args):
                                     output_filename_n = "{}_{}{}".format(filename_base, i, file_extension)
                                 else:
                                     output_filename_n = "{}{}".format(filename_base, file_extension)
-                                imageio.imwrite(output_filename_n, scaled)
+                                cv2.imwrite(output_filename_n, scaled)
                                 text_file.write('%s %d %d %d %d\n' % (output_filename_n, bb[0], bb[1], bb[2], bb[3]))
                         else:
                             print('Unable to align "%s"' % image_path)

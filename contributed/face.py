@@ -34,20 +34,15 @@ import os
 
 import cv2
 import numpy as np
-
-import tensorflow.compat.v1 as tf
-tf.disable_v2_behavior()
+import tensorflow as tf
 from scipy import misc
-
-import sys
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 import align.detect_face
 import facenet
 
 
 gpu_memory_fraction = 0.3
-facenet_model_checkpoint = os.path.join(os.path.dirname(__file__), '..', 'model_checkpoints','20180402-114759')
+facenet_model_checkpoint = os.path.dirname(__file__) + "/../model_checkpoints/20170512-110547"
 classifier_model = os.path.dirname(__file__) + "/../model_checkpoints/my_classifier_1.pkl"
 debug = False
 
@@ -65,7 +60,7 @@ class Recognition:
     def __init__(self):
         self.detect = Detection()
         self.encoder = Encoder()
-        # self.identifier = Identifier()
+        self.identifier = Identifier()
 
     def add_identity(self, image, person_name):
         faces = self.detect.find_faces(image)
@@ -83,7 +78,7 @@ class Recognition:
             if debug:
                 cv2.imshow("Face: " + str(i), face.image)
             face.embedding = self.encoder.generate_embedding(face)
-            # face.name = self.identifier.identify(face)
+            face.name = self.identifier.identify(face)
 
         return faces
 
@@ -154,7 +149,7 @@ class Detection:
             face.bounding_box[2] = np.minimum(bb[2] + self.face_crop_margin / 2, img_size[1])
             face.bounding_box[3] = np.minimum(bb[3] + self.face_crop_margin / 2, img_size[0])
             cropped = image[face.bounding_box[1]:face.bounding_box[3], face.bounding_box[0]:face.bounding_box[2], :]
-            face.image = cv2.resize(cropped, (self.face_crop_size, self.face_crop_size))
+            face.image = misc.imresize(cropped, (self.face_crop_size, self.face_crop_size), interp='bilinear')
 
             faces.append(face)
 

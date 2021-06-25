@@ -52,14 +52,11 @@ from __future__ import print_function
 
 import time
 from scipy import misc
-
-import tensorflow.compat.v1 as tf
-tf.disable_v2_behavior()
+import tensorflow as tf
 import numpy as np
 import sys
 import os
 import argparse
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 import facenet
 import align.detect_face
 import glob
@@ -118,13 +115,17 @@ def main(args):
                 embed = sess.run(embeddings, feed_dict=feed_dict)
                 emb_array[i*batch_size:n, :] = embed
                 print('Completed batch', i+1, 'of', nrof_batches)
-                #   export emedings and labels
-                np.save(args.embeddings_name, emb_array[:n])
-                np.save(args.labels_strings_name, image_list[:n])
 
             run_time = time.time() - start_time
             print('Run time: ', run_time)
 
+            #   export emedings and labels
+            label_list  = np.array(label_list)
+
+            np.save(args.embeddings_name, emb_array)
+            np.save(args.labels_name, label_list)
+            label_strings = np.array(label_strings)
+            np.save(args.labels_strings_name, label_strings[label_list])
 
 
 def load_and_align_data(image_paths, image_size, margin, gpu_memory_fraction):

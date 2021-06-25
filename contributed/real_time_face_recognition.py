@@ -27,10 +27,9 @@ Based on code from https://github.com/shanren7/real_time_face_recognition
 import argparse
 import sys
 import time
+
 import cv2
-import sys
-import os
-sys.path.append(os.path.dirname(__file__))
+
 import face
 
 

@@ -29,9 +29,7 @@ from __future__ import print_function
 from six import string_types, iteritems
 
 import numpy as np
-
-import tensorflow.compat.v1 as tf
-tf.disable_v2_behavior()
+import tensorflow as tf
 #from math import floor
 import cv2
 import os
@@ -209,9 +207,9 @@ class Network(object):
     """
     @layer
     def softmax(self, target, axis, name=None):
-        max_axis = tf.reduce_max(target, axis, keepdims=True)
+        max_axis = tf.reduce_max(target, axis, keep_dims=True)
         target_exp = tf.exp(target-max_axis)
-        normalize = tf.reduce_sum(target_exp, axis, keepdims=True)
+        normalize = tf.reduce_sum(target_exp, axis, keep_dims=True)
         softmax = tf.div(target_exp, normalize, name)
         return softmax
     
@@ -278,7 +276,6 @@ class ONet(Network):
 def create_mtcnn(sess, model_path):
     if not model_path:
         model_path,_ = os.path.split(os.path.realpath(__file__))
-
     with tf.variable_scope('pnet'):
         data = tf.placeholder(tf.float32, (None,None,None,3), 'input')
         pnet = PNet({'data':data})

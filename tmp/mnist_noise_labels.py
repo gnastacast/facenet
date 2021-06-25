@@ -28,9 +28,7 @@ import sys
 import time
 
 from six.moves import urllib  # @UnresolvedImport
-
-import tensorflow.compat.v1 as tf
-tf.disable_v2_behavior()
+import tensorflow as tf
 import numpy as np
 from six.moves import xrange
 

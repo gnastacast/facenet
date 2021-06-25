@@ -31,9 +31,7 @@ import os.path
 import time
 import sys
 import random
-
-import tensorflow.compat.v1 as tf
-tf.disable_v2_behavior()
+import tensorflow as tf
 import numpy as np
 import importlib
 import argparse

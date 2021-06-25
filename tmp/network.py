@@ -27,9 +27,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-
-import tensorflow.compat.v1 as tf
-tf.disable_v2_behavior()
+import tensorflow as tf
 from tensorflow.python.ops import array_ops
 from tensorflow.python.ops import control_flow_ops
 

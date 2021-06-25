@@ -24,9 +24,7 @@ import unittest
 import tempfile
 import os
 import shutil
-
-import tensorflow.compat.v1 as tf
-tf.disable_v2_behavior()
+import tensorflow as tf
 import numpy as np
 
 class TrainTest(unittest.TestCase):

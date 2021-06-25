@@ -27,9 +27,14 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import os
+cwd = os.getcwd()
+import sys
+sys.path.append(cwd)
+sys.path.append(os.path.join(os.path.abspath(__file__), '..', '..'))
+from src import facenet
 
-import tensorflow.compat.v1 as tf
-tf.disable_v2_behavior()
+import tensorflow as tf
 import sys
 import argparse
 import importlib
@@ -64,12 +69,12 @@ def main(args):
         attribs_list = []
         for img in image_list:
             key = os.path.split(img)[1].split('.')[0]
-            attr = attribs_dict[key]
-            assert len(attr)==nrof_attributes
+            attr = list(attribs_dict[key])
+            assert len(attr) == nrof_attributes
             attribs_list.append(attr)
             
         # Create the input queue
-        index_list = range(len(image_list))
+        index_list = list(range(len(image_list)))
         input_queue = tf.train.slice_input_producer([image_list, attribs_list, index_list], num_epochs=1, shuffle=False)        
         
         nrof_preprocess_threads = 4
@@ -78,7 +83,7 @@ def main(args):
             filename = input_queue[0]
             file_contents = tf.read_file(filename)
             image = tf.image.decode_image(file_contents, channels=3)
-            image = tf.image.resize_image_with_crop_or_pad(image, 160, 160)
+            image = tf.image.resize_image_with_crop_or_pad(image, args.image_size, args.image_size)
             #image = tf.image.resize_images(image, (64,64))
             image.set_shape((args.image_size, args.image_size, 3))
             attrib = input_queue[1]
@@ -150,7 +155,8 @@ def main(args):
             filename = os.path.expanduser(args.output_filename)
             print('Writing attribute vectors, latent variables and attributes to %s' % filename)
             mdict = {'latent_vars':latent_vars, 'attributes':attributes, 
-                     'fields':fields, 'attribute_vectors':attribute_vectors }
+                     'fields':np.array(fields).astype('|S9'), 'attribute_vectors':attribute_vectors }
+            
             with h5py.File(filename, 'w') as f:
                 for key, value in iteritems(mdict):
                     f.create_dataset(key, data=value)
